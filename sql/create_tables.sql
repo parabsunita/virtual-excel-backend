@@ -95,3 +95,10 @@ ADD updated_at DATETIME NULL,
 
 ALTER TABLE employees
 ADD active_status BIT DEFAULT 1;
+
+
+ALTER TABLE folders
+ADD 
+    active_status BIT DEFAULT 1,
+    updated_at DATETIME NULL,
+    deleted_at DATETIME NULL;
