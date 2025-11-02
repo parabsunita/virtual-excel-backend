@@ -102,3 +102,19 @@ ADD
     active_status BIT DEFAULT 1,
     updated_at DATETIME NULL,
     deleted_at DATETIME NULL;
+
+
+
+ALTER TABLE excels
+ADD 
+    active_status BIT DEFAULT 1,
+    updated_at DATETIME NULL,
+    deleted_at DATETIME NULL;
+
+
+
+    ALTER TABLE sheets
+ADD 
+    active_status BIT DEFAULT 1,
+    updated_at DATETIME NULL,
+    deleted_at DATETIME NULL;
