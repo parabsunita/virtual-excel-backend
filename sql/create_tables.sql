@@ -86,3 +86,12 @@ CREATE TABLE IF NOT EXISTS rows (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (sheet_id) REFERENCES sheets(id) ON DELETE CASCADE
 );
+
+
+ALTER TABLE employees
+ADD updated_at DATETIME NULL,
+    deleted_at DATETIME NULL;
+
+
+ALTER TABLE employees
+ADD active_status BIT DEFAULT 1;

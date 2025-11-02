@@ -24,7 +24,7 @@ app.use('/api/columns', columnRoutes);
 app.use('/api/rows', rowRoutes);
 app.use('/api/access', accessRoutes);
 
-app.use((req,res)=> res.status(404).json({ error: 'Not Found' }));
+app.use((req,res)=> res.status(404).json({ error: ' route Not Found' }));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, ()=> console.log(`Server running on port ${PORT}`));
