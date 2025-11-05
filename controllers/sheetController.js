@@ -16,7 +16,7 @@ exports.createSheet = async (req, res) => {
     const pool = await db.connectDb();
     const org_id = req.query.org_id || req.user.org_id || req.user.id;
 
-    // ✅ Step 1: Validate Excel file
+    // ✅ Step 1: Validate Excel file and organization
     const excelCheck = await pool
       .request()
       .input('excel_id', sql.Int, excel_id)
@@ -56,7 +56,7 @@ exports.createSheet = async (req, res) => {
     }
 
     // ✅ Step 3: Insert new sheet
-    const result = await pool
+    const sheetResult = await pool
       .request()
       .input('excel_id', sql.Int, excel_id)
       .input('sheet_name', sql.NVarChar, sheet_name)
@@ -67,14 +67,31 @@ exports.createSheet = async (req, res) => {
         VALUES (@excel_id, @sheet_name, @created_by, GETDATE())
       `);
 
+    const sheet_id = sheetResult.recordset[0].sheet_id;
+
+    // ✅ Step 4: Create a dynamic table for this sheet
+    const tableName = `sheet_data_${sheet_id}`;
+    const createTableSQL = `
+      CREATE TABLE ${tableName} (
+        id INT IDENTITY(1,1) PRIMARY KEY,
+        row_data NVARCHAR(MAX),
+        created_by INT,
+        created_at DATETIME DEFAULT GETDATE()
+      );
+    `;
+
+    await pool.request().query(createTableSQL);
+
+    // ✅ Step 5: Return success response
     res.json({
       success: true,
-      message: 'Sheet created successfully',
-      sheet_id: result.recordset[0].sheet_id,
+      message: 'Sheet created successfully, and table initialized.',
+      sheet_id,
+      table_name: tableName,
     });
   } catch (err) {
-    console.error('❌ Error creating sheet:', err);
-    res.status(500).json({ error: 'Failed to create sheet' });
+    console.error('❌ Error creating sheet and table:', err);
+    res.status(500).json({ error: 'Failed to create sheet or its table' });
   }
 };
 
