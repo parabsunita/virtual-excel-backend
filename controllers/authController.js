@@ -63,7 +63,7 @@ exports.registerOrg = async (req, res) => {
       .query('INSERT INTO employees (org_id, name, email, password, role, is_verified) VALUES (@org_id, @name, @email, @password, @role, @is_verified)');
 
     // send OTP email
-    await sendEmail(email, 'Verify your account', verifyEmailTemplate(org_name, otp));
+    //await sendEmail(email, 'Verify your account', verifyEmailTemplate(org_name, otp));
     res.json({ success: true, message: 'Registered. Check email for OTP.' });
   } catch (err) {
     console.error(err);
@@ -101,23 +101,54 @@ exports.loginOrg = async (req, res) => {
   try {
     const { email, password } = req.body;
     const pool = await connectDb();
+
+    // Fetch org by email
     const orgResult = await pool.request()
       .input('email', sql.NVarChar, email)
-      .query('SELECT * FROM organizations WHERE email = @email');
+      .query('SELECT id, org_name, email, password, is_verified FROM organizations WHERE email = @email');
+
     const rows = orgResult.recordset;
-    if (!rows.length) return res.status(400).json({ error: 'Invalid credentials' });
+    if (!rows.length) {
+      return res.status(400).json({ error: 'Invalid credentials' });
+    }
+
     const org = rows[0];
-    if (!org.is_verified) return res.status(403).json({ error: 'Please verify your email first' });
+
+    // Skip verification for now (you can uncomment later)
+    // if (!org.is_verified) return res.status(403).json({ error: 'Please verify your email first' });
+
     const match = await bcrypt.compare(password, org.password || '');
-    if (!match) return res.status(400).json({ error: 'Invalid credentials' });
-    const token = jwt.sign({ id: org.id, role: 'admin', type: 'org' }, process.env.JWT_SECRET || 'secret', { expiresIn: '8h' });
-    res.json({ success: true, token });
+    if (!match) {
+      return res.status(400).json({ error: 'Invalid credentials' });
+    }
+
+    // Generate JWT
+    const token = jwt.sign(
+      { id: org.id, role: 'admin', type: 'org' },
+      process.env.JWT_SECRET || 'secret',
+      { expiresIn: '8h' }
+    );
+
+    // Return org details (without password)
+    res.json({
+      success: true,
+      message: 'Login successful',
+      token,
+      org: {
+        org_id: org.id,
+        org_name: org.org_name,
+        email: org.email,
+        // optional field to track verification or dashboard state
+        is_verified: org.is_verified,
+      }
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Login failed' });
   }
 };
-
+ 
+ 
 exports.forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;

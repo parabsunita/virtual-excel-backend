@@ -14,6 +14,8 @@ exports.createFolder = async (req, res) => {
       return res.status(400).json({ error: 'Folder name is required' });
     }
 
+    console.log('Creating folder:', { org_id, folder_name });
+
     // 🔹 Check if organization exists
     const orgCheck = await pool.request()
       .input('org_id', sql.Int, org_id)
