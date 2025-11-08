@@ -20,14 +20,29 @@ exports.createFolder = async (req, res) => {
     const orgCheck = await pool.request()
       .input('org_id', sql.Int, org_id)
       .query('SELECT id FROM organizations WHERE id = @org_id');
-    if (orgCheck.recordset.length === 0)
+
+    if (orgCheck.recordset.length === 0) {
       return res.status(404).json({ error: 'Organization not found' });
+    }
+
+    // 🔹 Check for duplicate folder name within the same organization
+    const existingFolder = await pool.request()
+      .input('org_id', sql.Int, org_id)
+      .input('folder_name', sql.NVarChar, folder_name)
+      .query(`
+        SELECT id FROM folders 
+        WHERE org_id = @org_id AND LOWER(folder_name) = LOWER(@folder_name) AND active_status = 1
+      `);
+
+    if (existingFolder.recordset.length > 0) {
+      return res.status(400).json({ error: 'Folder name already exists for this organization' });
+    }
 
     // 🔹 Insert new folder
     const result = await pool.request()
       .input('org_id', sql.Int, org_id)
       .input('folder_name', sql.NVarChar, folder_name)
-      .input('created_by', sql.Int, org_id) // Assuming created_by is org_id for simplicity
+      .input('created_by', sql.Int, org_id) // Assuming org_id is the creator
       .query(`
         INSERT INTO folders (org_id, folder_name, created_by, created_at, active_status)
         VALUES (@org_id, @folder_name, @created_by, GETDATE(), 1);
@@ -45,6 +60,7 @@ exports.createFolder = async (req, res) => {
   }
 };
 
+
 // ===============================
 // ✅ List Folders (Optional Filter)
 // ===============================
@@ -54,12 +70,22 @@ exports.listFolders = async (req, res) => {
     const { status } = req.query;
     const pool = await connectDb();
 
+    // Base query: select folders
     let query = `
-      SELECT * FROM folders 
-      WHERE org_id = @org_id AND deleted_at IS NULL
+      SELECT 
+        f.id AS folder_id, 
+        f.folder_name, 
+        f.org_id, 
+        f.active_status, 
+        f.created_at, 
+        f.updated_at,
+        ISNULL((SELECT COUNT(*) FROM excels e WHERE e.folder_id = f.id AND e.deleted_at IS NULL), 0) AS files
+      FROM folders f
+      WHERE f.org_id = @org_id AND f.deleted_at IS NULL
     `;
-    if (status === 'active') query += ' AND active_status = 1';
-    if (status === 'inactive') query += ' AND active_status = 0';
+
+    if (status === 'active') query += ' AND f.active_status = 1';
+    if (status === 'inactive') query += ' AND f.active_status = 0';
 
     const result = await pool.request()
       .input('org_id', sql.Int, org_id)
@@ -71,6 +97,7 @@ exports.listFolders = async (req, res) => {
     res.status(500).json({ error: 'Failed to list folders' });
   }
 };
+
 
 // ===============================
 // ✅ Get Folder by ID

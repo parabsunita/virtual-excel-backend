@@ -9,7 +9,7 @@ exports.createExcel = async (req, res) => {
   try {
     const { folder_id } = req.params;
     const { excel_name } = req.body;
-
+console.log('Request to create Excel:', { folder_id, excel_name });
     if (!excel_name) {
       return res.status(400).json({ error: 'Excel name is required' });
     }
