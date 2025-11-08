@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
 const app = express();
-
+const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const employeeRoutes = require('./routes/employeeRoutes');
 const folderRoutes = require('./routes/folderRoutes');
@@ -11,6 +11,17 @@ const sheetRoutes = require('./routes/sheetRoutes');
 const columnRoutes = require('./routes/columnRoutes');
 const rowRoutes = require('./routes/rowRoutes');
 const accessRoutes = require('./routes/accessRoutes');
+
+
+
+// ✅ Configure CORS properly
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://virtual-excel-frontend.onrender.com'], // frontend URLs
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
 
 app.use(morgan('dev'));
 app.use(express.json());

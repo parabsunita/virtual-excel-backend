@@ -1,0 +1,548 @@
+{
+	"info": {
+		"_postman_id": "79682ffa-2df8-49cb-9126-987a41836468",
+		"name": "virtual_excel",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "18148978",
+		"_collection_link": "https://speeding-moon-664755.postman.co/workspace/zomato~2189bc22-af3b-4e28-9251-a171e299b0c6/collection/18148978-79682ffa-2df8-49cb-9126-987a41836468?action=share&source=collection_link&creator=18148978"
+	},
+	"item": [
+		{
+			"name": "http://localhost:5000/api/excels/12",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <ADMIN_TOKEN>"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"excel_name\": \"Finance Report\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/excels/1?org_id=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"excels",
+						"1"
+					],
+					"query": [
+						{
+							"key": "org_id",
+							"value": "2"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl -X POST http://localhost:5000/api/excels/12 \\\r\n-H \"Authorization: Bearer <ADMIN_TOKEN>\" \\\r\n-H \"Content-Type: application/json\" \\\r\n-d '{\"excel_name\": \"Finance Report\"}'\r\n"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/api/excels/12/8",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <ADMIN_TOKEN>"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/excels/1/1",
+				"description": "Generated from cURL: curl -X DELETE http://localhost:5000/api/excels/12/8 \\\r\n-H \"Authorization: Bearer <ADMIN_TOKEN>\"\r\n"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:5000/api/auth/register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"org_name\": \"ABC Pvt Ltd\",\r\n  \"email\": \"admin@ubc.com\",\r\n  \"password\": \"Admin@123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/auth/register",
+				"description": "Generated from cURL: curl -X POST http://localhost:5000/api/auth/register \\\r\n-H \"Content-Type: application/json\" \\\r\n-d '{\r\n  \"name\": \"ABC Pvt Ltd\",\r\n  \"email\": \"admin@abc.com\",\r\n  \"password\": \"Admin@123\"\r\n}'\r\n"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/employee/1",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer <YOUR_JWT_TOKEN>"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"John Doe\",\r\n    \"email\": \"john@example.com\",\r\n    \"password\": \"password123\",\r\n    \"role\": \"employee\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/employees/2",
+				"description": "Generated from cURL: curl -X POST http://localhost:3000/employee/1 \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer <YOUR_JWT_TOKEN>\" \\\n  -d '{\"name\": \"John Doe\", \"email\": \"john@example.com\", \"password\": \"password123\", \"role\": \"user\"}'"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/api/employees/2",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer <YOUR_JWT_TOKEN>"
+					}
+				],
+				"url": "http://localhost:3000/api/employees/2",
+				"description": "Generated from cURL: curl --location --request DELETE 'http://localhost:3000/api/employees/2' \\\r\n--header 'Content-Type: application/json' \\\r\n--header 'Authorization: Bearer <YOUR_JWT_TOKEN>'\r\n"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/auth/login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"admin@ubc.com\",\r\n    \"password\": \"Admin@123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/auth/login",
+				"description": "Generated from cURL: curl -X POST http://localhost:3000/auth/login \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"email\": \"user@example.com\", \"password\": \"yourpassword\"}'"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/auth/verify-otp",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"email\": \"admin@ubc.com\", \"otp\": \"698673\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/auth/verify-otp",
+				"description": "Generated from cURL: curl -X POST http://localhost:3000/auth/verify-otp \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"email\": \"user@example.com\", \"otp\": \"123456\"}'"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/employee/1",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <YOUR_JWT_TOKEN>"
+					}
+				],
+				"url": "http://localhost:3000/api/employees/2",
+				"description": "Generated from cURL: curl -X GET http://localhost:3000/employee/1 \\\n  -H \"Authorization: Bearer <YOUR_JWT_TOKEN>\""
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/employee/1/2",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer <YOUR_JWT_TOKEN>"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\": \"Jane Doe\", \"email\": \"jane@example.com\", \"password\": \"newpassword123\", \"role\": \"employee\", \"is_verified\": true}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/employee/1/2",
+				"description": "Generated from cURL: curl -X PUT http://localhost:3000/employee/1/2 \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer <YOUR_JWT_TOKEN>\" \\\n  -d '{\"name\": \"Jane Doe\", \"email\": \"jane@example.com\", \"password\": \"newpassword123\", \"role\": \"employee\", \"is_verified\": true}'"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/api/employees/2/5",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer <YOUR_JWT_TOKEN>"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"John Doe\",\r\n    \"email\": \"john@example.com\",\r\n    \"password\": \"password123\",\r\n    \"role\": \"employee\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/employees/2/7",
+				"description": "Generated from cURL: curl --location --request PUT 'http://localhost:3000/api/employees/2/5' \\\r\n--header 'Content-Type: application/json' \\\r\n--header 'Authorization: Bearer <YOUR_JWT_TOKEN>' \\\r\n--data-raw '{\r\n    \"name\": \"John Doe\",\r\n    \"email\": \"john@example.com\",\r\n    \"password\": \"password123\",\r\n    \"role\": \"employee\"\r\n}'\r\n"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/api/employees/1?status=inactive",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <YOUR_JWT_TOKEN>"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/employees/1?status=active",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"employees",
+						"1"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "active"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl --location 'http://localhost:3000/api/employees/1?status=inactive' \\\r\n--header 'Authorization: Bearer <YOUR_JWT_TOKEN>'\r\n"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/api/employees/1/5/status",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer <YOUR_JWT_TOKEN>"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"active_status\": false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/employees/4/2/status",
+				"description": "Generated from cURL: curl --location --request PATCH 'http://localhost:3000/api/employees/1/5/status' \\\r\n--header 'Content-Type: application/json' \\\r\n--header 'Authorization: Bearer <YOUR_JWT_TOKEN>' \\\r\n--data-raw '{\r\n  \"active_status\": true\r\n}'\r\n"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/api/folders/1",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer <ADMIN_JWT_TOKEN>"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"folder_name\": \"Finance Reports\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/folders/2",
+				"description": "Generated from cURL: curl --location 'http://localhost:3000/api/folders/1' \\\r\n--header 'Content-Type: application/json' \\\r\n--header 'Authorization: Bearer <ADMIN_JWT_TOKEN>' \\\r\n--data '{\r\n  \"folder_name\": \"Finance Reports\"\r\n}'\r\n"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/api/folders/1/5",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer <your_jwt_token>"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"folder_name\": \"Updated Folder Name\",\r\n    \"active_status\": true\r\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/folders/2/1",
+				"description": "Generated from cURL: curl -X PUT http://localhost:3000/api/folders/1/5 \\\r\n  -H \"Content-Type: application/json\" \\\r\n  -H \"Authorization: Bearer <your_jwt_token>\" \\\r\n  -d '{\r\n    \"folder_name\": \"Updated Folder Name\",\r\n    \"active_status\": true\r\n  }'\r\n"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/api/folders/1",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer <your_jwt_token>"
+					}
+				],
+				"url": "http://localhost:3000/api/folders/2/1",
+				"description": "Generated from cURL: curl -X GET http://localhost:3000/api/folders/1 \\\r\n  -H \"Content-Type: application/json\" \\\r\n  -H \"Authorization: Bearer <your_jwt_token>\"\r\n"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/api/folders/1/5",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer <your_jwt_token>"
+					}
+				],
+				"url": "http://localhost:3000/api/folders/2/1",
+				"description": "Generated from cURL: curl -X DELETE http://localhost:3000/api/folders/1/5 \\\r\n  -H \"Content-Type: application/json\" \\\r\n  -H \"Authorization: Bearer <your_jwt_token>\"\r\n"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/api/excels/12?status=active",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <TOKEN>"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/excels/1?status=active",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"excels",
+						"1"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "active"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl -X GET \"http://localhost:5000/api/excels/12?status=active\" \\\r\n-H \"Authorization: Bearer <TOKEN>\"\r\n"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/api/excels/12/8",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <ADMIN_TOKEN>"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"excel_name\": \"Updated Excel Name\",\r\n    \"active_status\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/excels/1/2",
+				"description": "Generated from cURL: curl -X PUT http://localhost:5000/api/excels/12/8 \\\r\n-H \"Authorization: Bearer <ADMIN_TOKEN>\" \\\r\n-H \"Content-Type: application/json\" \\\r\n-d '{\"excel_name\": \"Updated Excel Name\", \"active_status\": false}'\r\n"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/api/sheets/1",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer YOUR_JWT_TOKEN"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"sheet_name\": \"Employee Data\"\r\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/sheets/2?org_id=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"sheets",
+						"2"
+					],
+					"query": [
+						{
+							"key": "org_id",
+							"value": "2"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl -X POST http://localhost:5000/api/sheets/10 \\\r\n  -H \"Content-Type: application/json\" \\\r\n  -H \"Authorization: Bearer YOUR_JWT_TOKEN\" \\\r\n  -d '{\r\n    \"sheet_name\": \"Employee Data\"\r\n  }'\r\n"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/api/sheets/10",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer YOUR_JWT_TOKEN"
+					}
+				],
+				"url": "http://localhost:5000/api/sheets/10",
+				"description": "Generated from cURL: curl -X GET http://localhost:5000/api/sheets/10 \\\r\n  -H \"Authorization: Bearer YOUR_JWT_TOKEN\"\r\n"
+			},
+			"response": []
+		}
+	]
+}

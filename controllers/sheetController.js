@@ -1,5 +1,8 @@
 const sql = require('mssql');
-const db = require('../config/db'); // your MSSQL connection config
+const db = require('../config/db');
+const xlsx = require('xlsx'); // npm install xlsx
+const fs = require('fs');
+const path = require('path');
 
 // ===============================
 // 🧾 Create Sheet
@@ -9,14 +12,12 @@ exports.createSheet = async (req, res) => {
     const { excel_id } = req.params;
     const { sheet_name } = req.body;
 
-    if (!sheet_name) {
-      return res.status(400).json({ error: 'Sheet name is required' });
-    }
+    if (!sheet_name) return res.status(400).json({ error: 'Sheet name is required' });
 
     const pool = await db.connectDb();
     const org_id = req.query.org_id || req.user.org_id || req.user.id;
 
-    // ✅ Step 1: Validate Excel file and organization
+    // Validate Excel and Org
     const excelCheck = await pool
       .request()
       .input('excel_id', sql.Int, excel_id)
@@ -31,32 +32,24 @@ exports.createSheet = async (req, res) => {
           AND f.org_id = @org_id
       `);
 
-    if (excelCheck.recordset.length === 0) {
-      return res.status(400).json({
-        error: 'Invalid or deleted Excel file for this organization.',
-      });
-    }
+    if (excelCheck.recordset.length === 0)
+      return res.status(400).json({ error: 'Invalid or deleted Excel file for this organization.' });
 
-    // ✅ Step 2: Check for duplicate sheet name in same Excel
-    const duplicateCheck = await pool
+    // Check duplicate sheet
+    const dup = await pool
       .request()
       .input('excel_id', sql.Int, excel_id)
       .input('sheet_name', sql.NVarChar, sheet_name)
       .query(`
         SELECT id FROM sheets
-        WHERE excel_id = @excel_id
-          AND LOWER(sheet_name) = LOWER(@sheet_name)
+        WHERE excel_id=@excel_id AND LOWER(sheet_name)=LOWER(@sheet_name)
           AND deleted_at IS NULL
       `);
+    if (dup.recordset.length)
+      return res.status(400).json({ error: `A sheet named "${sheet_name}" already exists.` });
 
-    if (duplicateCheck.recordset.length > 0) {
-      return res.status(400).json({
-        error: `A sheet named "${sheet_name}" already exists under this Excel.`,
-      });
-    }
-
-    // ✅ Step 3: Insert new sheet
-    const sheetResult = await pool
+    // Insert sheet
+    const sheetRes = await pool
       .request()
       .input('excel_id', sql.Int, excel_id)
       .input('sheet_name', sql.NVarChar, sheet_name)
@@ -67,9 +60,9 @@ exports.createSheet = async (req, res) => {
         VALUES (@excel_id, @sheet_name, @created_by, GETDATE())
       `);
 
-    const sheet_id = sheetResult.recordset[0].sheet_id;
+    const sheet_id = sheetRes.recordset[0].sheet_id;
 
-    // ✅ Step 4: Create a dynamic table for this sheet
+    // Create dynamic data table
     const tableName = `sheet_data_${sheet_id}`;
     const createTableSQL = `
       CREATE TABLE ${tableName} (
@@ -79,24 +72,17 @@ exports.createSheet = async (req, res) => {
         created_at DATETIME DEFAULT GETDATE()
       );
     `;
-
     await pool.request().query(createTableSQL);
 
-    // ✅ Step 5: Return success response
-    res.json({
-      success: true,
-      message: 'Sheet created successfully, and table initialized.',
-      sheet_id,
-      table_name: tableName,
-    });
+    res.json({ success: true, message: 'Sheet created successfully', sheet_id, table_name: tableName });
   } catch (err) {
-    console.error('❌ Error creating sheet and table:', err);
-    res.status(500).json({ error: 'Failed to create sheet or its table' });
+    console.error('❌ Error creating sheet:', err);
+    res.status(500).json({ error: 'Failed to create sheet' });
   }
 };
 
 // ===============================
-// 📤 Upload Sheet Data
+// 📤 Upload Sheet Data (JSON)
 // ===============================
 exports.uploadSheetData = async (req, res) => {
   try {
@@ -104,11 +90,9 @@ exports.uploadSheetData = async (req, res) => {
     const { sheet_name, rows } = req.body;
 
     if (!sheet_name) return res.status(400).json({ error: 'sheet_name is required' });
-
     const pool = await sql.connect(db);
 
-    // Create new sheet
-    const sheetResult = await pool
+    const sheetRes = await pool
       .request()
       .input('excel_id', sql.Int, excel_id)
       .input('sheet_name', sql.NVarChar, sheet_name)
@@ -119,49 +103,102 @@ exports.uploadSheetData = async (req, res) => {
         VALUES (@excel_id, @sheet_name, @created_by, GETDATE())
       `);
 
-    const sheet_id = sheetResult.recordset[0].sheet_id;
+    const sheet_id = sheetRes.recordset[0].sheet_id;
 
-    // If rows are provided
     if (Array.isArray(rows) && rows.length > 0) {
       const cols = Object.keys(rows[0]);
 
-      // Insert columns
       for (const c of cols) {
-        await pool
-          .request()
+        await pool.request()
           .input('sheet_id', sql.Int, sheet_id)
           .input('column_name', sql.NVarChar, c)
           .input('data_type', sql.NVarChar, 'TEXT')
-          .query(`
-            INSERT INTO columns (sheet_id, column_name, data_type)
-            VALUES (@sheet_id, @column_name, @data_type)
-          `);
+          .query(`INSERT INTO columns (sheet_id, column_name, data_type) VALUES (@sheet_id, @column_name, @data_type)`);
       }
 
-      // Insert rows
       for (const row of rows) {
-        await pool
-          .request()
+        await pool.request()
           .input('sheet_id', sql.Int, sheet_id)
           .input('row_data', sql.NVarChar, JSON.stringify(row))
           .input('created_by', sql.Int, req.user.id)
-          .query(`
-            INSERT INTO rows (sheet_id, row_data, created_by, created_at)
-            VALUES (@sheet_id, @row_data, @created_by, GETDATE())
-          `);
+          .query(`INSERT INTO rows (sheet_id, row_data, created_by, created_at) VALUES (@sheet_id, @row_data, @created_by, GETDATE())`);
       }
     }
 
     res.json({ success: true, message: 'Sheet uploaded successfully', sheet_id });
   } catch (err) {
-    console.error('Error uploading sheet data:', err);
+    console.error('❌ uploadSheetData Error:', err);
     res.status(500).json({ error: 'Failed to upload sheet data' });
   }
 };
 
 // ===============================
-// 📋 List Sheets under Excel
+// 📦 Upload Excel File (Bulk)
 // ===============================
+exports.uploadExcelFile = async (req, res) => {
+  try {
+    const { excel_id } = req.params;
+    if (!req.file) return res.status(400).json({ error: 'No Excel file uploaded' });
+
+    const filePath = path.join(__dirname, '../uploads', req.file.filename);
+    const workbook = xlsx.readFile(filePath);
+    const sheetNames = workbook.SheetNames;
+    const pool = await db.connectDb();
+
+    const createdSheets = [];
+
+    for (const sheetName of sheetNames) {
+      const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+      // Step 1: Create sheet entry
+      const sheetRes = await pool
+        .request()
+        .input('excel_id', sql.Int, excel_id)
+        .input('sheet_name', sql.NVarChar, sheetName)
+        .input('created_by', sql.Int, req.user.id)
+        .query(`
+          INSERT INTO sheets (excel_id, sheet_name, created_by, created_at)
+          OUTPUT INSERTED.id AS sheet_id
+          VALUES (@excel_id, @sheet_name, @created_by, GETDATE())
+        `);
+
+      const sheet_id = sheetRes.recordset[0].sheet_id;
+      const tableName = `sheet_data_${sheet_id}`;
+
+      // Step 2: Create dynamic table
+      await pool.request().query(`
+        CREATE TABLE ${tableName} (
+          id INT IDENTITY(1,1) PRIMARY KEY,
+          row_data NVARCHAR(MAX),
+          created_by INT,
+          created_at DATETIME DEFAULT GETDATE()
+        );
+      `);
+
+      // Step 3: Insert rows
+      for (const row of data) {
+        await pool.request()
+          .input('sheet_id', sql.Int, sheet_id)
+          .input('row_data', sql.NVarChar, JSON.stringify(row))
+          .input('created_by', sql.Int, req.user.id)
+          .query(`INSERT INTO ${tableName} (row_data, created_by) VALUES (@row_data, @created_by)`);
+      }
+
+      createdSheets.push({ sheet_name: sheetName, sheet_id, table_name: tableName, rows: data.length });
+    }
+
+    fs.unlinkSync(filePath); // cleanup temp file
+    res.json({ success: true, message: 'Excel uploaded successfully', sheets: createdSheets });
+  } catch (err) {
+    console.error('❌ uploadExcelFile Error:', err);
+    res.status(500).json({ error: 'Failed to upload Excel file' });
+  }
+};
+
+// ===============================
+// 📋 List, Update, Delete same as before
+// ===============================
+// (listSheets, updateSheet, deleteSheet unchanged)
 exports.listSheets = async (req, res) => {
   try {
     const { excel_id } = req.params;
@@ -198,6 +235,7 @@ exports.listSheets = async (req, res) => {
     res.status(500).json({ error: 'Failed to list sheets' });
   }
 };
+
 
 // ===============================
 // ✏️ Update Sheet
