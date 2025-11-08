@@ -16,8 +16,8 @@ const accessRoutes = require('./routes/accessRoutes');
 
 // ✅ Configure CORS properly
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://virtual-excel-frontend.onrender.com'], // frontend URLs
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  origin: '*', // frontend URLs
+ methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
