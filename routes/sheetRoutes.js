@@ -10,5 +10,5 @@ router.post('/upload/:excel_id', verifyToken, authorizeRoles('admin'), sheetCont
 router.get('/:excel_id', verifyToken, sheetController.listSheets);
 router.put('/:sheet_id', verifyToken, authorizeRoles('admin'), sheetController.updateSheet);
 router.delete('/:sheet_id', verifyToken, authorizeRoles('admin'), sheetController.deleteSheet);
-
+router.get('/sheet/:sheet_id', verifyToken, sheetController.getSheetById);
 module.exports = router;
