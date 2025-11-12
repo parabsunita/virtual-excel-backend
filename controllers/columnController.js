@@ -8,7 +8,6 @@ exports.addColumn = async (req, res) => {
   try {
     const { sheet_id } = req.params;
     const { columns } = req.body; // Expecting array: [{ column_name, data_type }]
-    const org_id = req.query.org_id || req.user.org_id || req.user.id;
 
     if (!Array.isArray(columns) || columns.length === 0) {
       return res.status(400).json({ error: 'Columns array is required.' });
